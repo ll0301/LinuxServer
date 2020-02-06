@@ -1,0 +1,31 @@
+PHP
+
+//Version 
+php-7.2.10
+
+//Download Link
+https://www.php.net/distributions/php-7.2.10.tar.gz
+
+//설치순서
+1. -> sudo wget https://www.php.net/distributions/php-7.2.10.tar.gz
+   -> sudo mv mirror php-7.2.10.tar.gz
+   -> sudo tar xvfz php-7.2.10.tar.gz
+   -> cd php-7.2.10
+   -> ls -> configure 확인 
+   -> sudo ./configure --prefix=/usr/local/php --with-apxs2=/app/apache/bin/apxs --with-config-file-path=/app/apache/conf --with-zlib --disable-debug --enable-calendar --enable-ftp --enable-sockets --enable-sysvsem --enable-sysvshm
+   -> sudo make
+   -> sudo make test
+   -> sudo make install
+   -> cp php.ini-production /app/apache/conf/php.ini
+
+2. -> cd  /app/apache/htdocs 
+   -> sudo vi phpinfo.php
+	-> <?php phpinfo(); ?>  추가하고 저장 
+
+3. -> cd /app/apache/conf
+   -> vi httpd.conf
+	-> AddType application/x-httpd-php .php --> 이 내용을 추가한다. 
+		-> 웹서버가 php 파일을 제대로 인식하게 해준다. 
+   -> /etc/init.d/httpd start 
+   
+4. firefox --> 주소창에 localhost/phpinfo.php 입력  -->  phpinfo 창이 뜨면 성공 

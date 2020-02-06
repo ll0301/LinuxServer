@@ -1,0 +1,96 @@
+MariaDB 
+
+//Version
+MariaDB 10.3.12 
+
+//Download Link
+https://downloads.mariadb.org/interstitial/mariadb-10.3.12/source/mariadb-10.3.12.tar.gz/from/http%3A//ftp.hosteurope.de/mirror/archive.mariadb.org/
+
+//설치순서 
+
+1. -> cat /etc/*-release | uniq 
+	-> 리눅스 정보조회 
+   -> getconf LONG_BIT
+	-> 리눅스 비트확인 
+   -> sudo apt-get update 
+   -> sudo apt-get install gcc g++ libncurses5-dev libxml2-dev openssl libssl-dev curl libcurl4-openssl-dev libjpeg-dev libpng-dev libfreetype6-dev libsasl2-dev autoconf libncurses5-dev
+	-> 관련 패키지 설치
+
+2. -> sudo groupadd mysql
+   -> sudo useradd -g mysql -s /bin/bash -m mysql
+	-> MySQL 계정만들기 
+
+3. sudo apt-get install cmake
+	->cmkae 설치 
+
+4.  -> wget https://downloads.mariadb.org/interstitial/mariadb-10.3.12/source/mariadb-10.3.12.tar.gz/from/http%3A//ftp.hosteurope.de/mirror/archive.mariadb.org/
+   -> sudo mv index.html mariadb-10.3.12.tar.gz
+   -> sudo tar xvf mariadb-10.3.12.tar.gz
+   -> cd mariadb-10.3.12 
+   -> sudo cmake \
+-DCMAKE_INSTALL_PREFIX=/usr/local/mariadb103 \
+-DMYSQL_DATADIR=/usr/local/mariadb103/data \
+-DMYSQL_UNIX_ADDR=/usr/local/mariadb103/mysql.sock \
+-DSYSCONFDIR=/usr/local/mariadb103 \
+-DMYSQL_TCP_PORT=3306 \
+-DMYSQL_USER=mysql \
+-DDEFAULT_CHARSET=utf8 \
+-DDEFAULT_COLLATION=utf8_general_ci \
+-DWITH_EXTRA_CHARSETS=all \
+-DENABLED_LOCAL_INFILE=1 \
+-DWITH_INNOBASE_STORAGE_ENGINE=1 \
+-DWITH_ARCHIVE_STORAGE_ENGINE=1 \
+-DWITH_BLACKHOLE_STORAGE_ENGINE=1 \
+-DDOWNLOAD_BOOST=0 -DWITH_BOOST=./boost
+   -> sudo make
+   -> sudo make install
+
+5. sudo vi /usr/local/mariadb103/my.cnf -> 환경설정
+[mysqld] # port=3306 # basedir=/usr/local/mysql57 # datadir=/usr/local/mysql57/data # pid-file=/usr/local/mysql57/mysqld.pid # log_error=/usr/local/mysql57/mysql_error.log # lc-messages-dir=/usr/local/mysql57/share init_connect=SET collation_connection = utf8_general_ci init_connect=SET NAMES utf8 character-set-server=utf8 collation-server=utf8_general_ci # table_cache=1024 max_connections=2048 max_user_connections=500 max_connect_errors=10000 wait_timeout=300 query_cache_type = 1 query_cache_size = 128M query_cache_limit = 5M slow_query_log long_query_time=3 max_allowed_packet=16M sort_buffer_size = 2M # skip-innodb skip-name-resolve sql_mode = STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION [mysql] default-character-set=utf8 [client] default-character-set=utf8
+
+6. sudo chown -R mysql:mysql /usr/local/mariadb103
+	-> mariadb 설치 디렉토리를 mysql 계정으로 권한 수정 
+
+7. -> cd /usr/local/mariadb103	
+   -> sudo scripts/mysql_install_db --no-defaults --user=mysql --datadir=/usr/local/mariadb103/data --basedir=/usr/local/mariadb103 -v
+	-> mariadb 데이터베이스 초기화
+	-> mysql 계정으로 mariadb 실행 
+
+8. -> bin/mysqld_safe --skip-grant-tables &
+	-> root 암호 초기화 
+   -> bin/mysql -u root -p
+	-> 비밀번호 없이 enter mriadb 접속 
+	-> query
+		-> use mysql
+		-> update user set authentication_string = password('password') where user ='root';
+		-> flush privileges;
+		-> quit
+
+9. -> sudo cp /usr/local/mariadb103/support-files/mysql.server /etc/init.d/mariadb
+	-> 서비스 mariadb 파일복사
+   ->  sudo vi /etc/init.d/mariadb 
+	-> mariadb 수정 (설치 디렉토리와 데이터 디렉토리 설정)
+   		-> basedir=/usr/local/mariadb103 
+		    datadir=/usr/local/mariadb103/data 
+		    # Try to find basedir in /etc/my.cnf conf=/usr/local/mariadb103/my.cnf
+   -> sudo update-rc.d mariadb defaults
+ 	-> mariadb 서비스 등록
+
+10 -> sudo systemctl start mariadb.service
+	-> mariadb 서비스 시작
+   -> sudo systemctl status mariadb.service
+	-> mariadb 서비스 상태
+   -> sudo systemctl stop mariadb.service
+	-> mariadb 서비스 종료 
+
+-> 설치완료 
+
+//사용자 추가 
+mysql> create user 'user1'@'%' identified by 'userpw';
+mysql> grant all privileges on *.* to 'user1'@'%' with grant option;
+mysql> flush privileges;
+
+// DB 종속적 사용자 추가 
+create user 'terecal'@'%' identified by '****'; 
+GRANT ALL privileges ON terecal_db.* TO 'terecal'@'%'; 
+flush privileges;

@@ -1,0 +1,104 @@
+[Apache2]
+
+//Version
+httpd-2.4.34
+apr-1.5.2
+apr-util-1.5.4
+pcre-8.39.tar.gz
+
+//Download Link
+http://archive.apache.org/dist/httpd/httpd-2.4.34.tar.gz
+http://archive.apache.org/dist/apr/apr-1.5.2.tar.gz
+http://archive.apache.org/dist/apr/apr-util-1.5.4.tar.gz
+https://sourceforge.net/projects/pcre/files/pcre/8.39/pcre-8.39.tar.gz/download
+
+//컴파일 설치과정
+
+1. Ubuntu 터미널 클릭
+
+2. -> cd /home
+	-> home 디렉토리로 이동 
+   -> sudo mkdir apm_server
+	-> sudo : 현재 root 계정이 아니므로 앞에 추가해주어야함
+	-> mkdir apm_server : apm_server 디렉토리를 생성
+   -> cd apm_server 
+	-> apm_server 디렉토리로 이동
+
+3. -> sudo apt-get update
+	-> apt-get은 /etc/apt/sources.list 라는 인덱스를 가지고 있음
+	-> update 명령어 : 설치되어 있는 패키지의 정보를 얻음
+   -> sudo wget http://archive.apache.org/dist/httpd/httpd-2.4.23.tar.gz
+	->wget : HTTP 또는 FTP통신을 사용해 서버에서 파일이나 콘텐츠를 다운로드할 때 사용함
+	-> http://archive.apache.org/dist/httpd/httpd-2.4.34.tar.gz 에서 다운로드 받음
+	-> httpd-2.4.34.tar.gz 다운로드 
+	-> ls -> httpd-2.4.12.tar.gz 파일 확인 
+   -> sudo http://archive.apache.org/dist/apr/apr-1.5.2.tar.gz
+	-> apr-1.5.2.tar.gz 다운로드
+	-> ls -> apr-1.5.2.tar.gz 파일 확인 
+   -> sudo http://archive.apache.org/dist/apr/apr-util-1.5.4.tar.gz
+	-> apr-util-1.5.4.tar.gz 다운로드
+	-> ls -> apr-util-1.5.4.tar.gz 파일 확인
+   -> sudo wget https://sourceforge.net/projects/pcre/files/pcre/8.39/pcre-8.39.tar.gz/download
+	-> pcre-8.39.tar.gz 다운로드
+	-> ls -> 파일명 download 확인
+	-> sudo mv download pcre-8.39.tar.gz -> 파일명 pcre-8.39.tar.gz 로 변경
+	-> ls -> pcre-8.39.tar.gz 파일 확인 
+
+4. -> sudo tar xvfz httpd-2.4.34.tar.gz 
+	-> xvfz : tar.gz 파일 압축 풀기 명령어
+	-> httpd-2.4.34.tar.gz 파일 압축풀기
+	-> ls -> httpd-2.4.34 생성 확인 
+   -> sudo tar xvfz apr-1.5.2.tar.gz -C httpd-2.4.34/srclib/ 
+	-> apr-1.5.2.tar.gz -> apr-1.5.2.tar.gz 파일 압축을 해제할 것인데
+	-> -C httpd-2.4.34/srclib/ 디렉토리 안에 해제할 것
+	-> cd httpd-2.4.34/srclib
+	-> ls -> apr-1.5.2 생성확인
+	-> cd /home/apm_server
+   	-> mv httpd-2.4.34/srclib/apr-1.5.2 httpd-2.4.12/srclib/apr  
+	-> 디렉토리명 apr 로 변경
+   -> sudo tar xvfz apr-util-1.5.4.tar.gz -C httpd-2.4.34/srclib/
+	-> cd httpd-2.4.34/srclib
+	-> ls -> apr-util-1.5.4 생성확인
+	-> cd /home/apm_server
+   	-> mv httpd-2.4.34/srclib/apr-util-1.5.4 httpd-2.4.34/srclib/apr-util
+	-> 디렉토리명 apr-util 로 변경 
+   -> sudo tar xvfz pcre-8.39.tar.gz
+	-> ls -> pcre-8.30 파일확인
+	-> sudo apt-get install build-essential
+		-> build-essential?
+			-> 개발에 필요한 기본 라이브러리와 헤더 파일을 가지고 있음
+			-> 설치되어있지 않으면 ./configure 에서 에러발생
+	-> cd pcre-8.30 -> ls -> configure 파일 있는지 확인
+				-> configure : 소스 파일에 대한 환경설정 명령어 
+	-> sudo ./configure --prefix=/usr/local/pcre
+		-> ./configure : 설치하기전 준비하는 과정이라고 간단하게 정리해두자
+		-> --prefix=/usr/local/pcre : 해당 디렉토리에 설치하겠다는 뜻
+	-> sudo make && sudo make install
+		-> make : 소스를 컴파일 하는 과정
+			 사용자가 실행 가능한 파일로 만들어주는 과정
+			 make 과정이 끝나고 나면 설치파일이 생성 된 것
+		-> make install : make 으로 만들어진 설치파을로 설치하는 과정 
+                                               프로그램을 실행할 수 있게 파일들을 알맞은 위치에 복사		-> cd /usr/local -> ls -> pcre 생성확인 
+	-> cd /home/apm_server
+
+5. -> sudo apt-get install libssl-dev		
+	-> libssl-dev : SSL 개발에 필요한 라이브러리와 헤더파일 등을 가지고 있음 
+   -> cd httpd-2.4.34/
+   -> ls -> configure 파일 확인
+   -> sudo ./configure --prefix=/app/apache --with-included-apr --with-pcre=/usr/local/pcre/bin/pcre-config --with-ssl --enable-so --enable-ssl --enable-rewrite --with-mpm=worker --enable-cache --enable-modules=all --enable-mods-shared=all
+   -> sudo make && sudo make install
+
+6. -> cd /app/apache/conf 
+   -> sudo gedit httpd.conf 
+	-> ServerName localhost:80 으로 변경
+   -> cp /app/apache/bin/apachectl /etc/init.d/httpd
+   -> /etc/init.d/httpd start -> 아파치시작
+	-> /etc/init.d/httpd restart -> 재시작 
+   -> 브라우저로 접속하여 주소에 localhost 입력
+ 	-> It Works! 뜨면 아파치 설치 끝 
+
+
+
+
+
+	
