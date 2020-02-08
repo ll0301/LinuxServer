@@ -94,7 +94,7 @@ https://sourceforge.net/projects/pcre/files/pcre/8.39/pcre-8.39.tar.gz/download
    -> cp /app/apache/bin/apachectl /etc/init.d/httpd
    -> /etc/init.d/httpd start -> 아파치시작
 	-> /etc/init.d/httpd restart -> 재시작 
-   -> 브라우저로 접속하여 주소에 localhost 입력
+   -> 브라우저로 접속하여 주소에 127.0.0.1 입력
  	-> It Works! 뜨면 아파치 설치 끝 
 
 

@@ -1,0 +1,60 @@
+우분투의 기본적인 방화벽은 UFW 이다. 
+UFW는 iptables를 좀 더 쉽게 설정할 수 있도록 한 것이다.
+간단한 방화벽 구성에는 문제없으나 
+수준높은 방화벽 구성에는 iptables 룰을 직접 사용해야 한다. 
+
+->사용법 참고 사이트
+https://medium.com/@it_dayeon/ubuntu-18-04-%EA%B3%A0%EC%A0%95-ip-%EC%84%A4%EC%A0%95%ED%95%98%EA%B8%B0-54671dec8055
+https://heuristing.net/posts/24/Ubuntu-18.04%EC%97%90%EC%84%9C-%EB%84%A4%ED%8A%B8%EC%9B%8C%ED%81%AC-%EC%B9%B4%EB%93%9C-%EC%B6%94%EA%B0%80-%EB%B0%8F-IP-%EC%84%A4%EC%A0%95%ED%95%98%EA%B8%B0
+https://www.lesstif.com/pages/viewpage.action?pageId=61899302
+https://gamball.tistory.com/entry/Ubuntu-1804-%EA%B3%A0%EC%A0%95-IP-%EC%84%A4%EC%A0%95
+https://www.lesstif.com/pages/viewpage.action?pageId=61899302
+
+// VirtualBox Ubuntu 18.04 고정 ip 설정
+
+1. -> VirtualBox -> 설정 클릭 
+   -> 네트워크-> 어댑터2 -> 다음에 연결됨 : 호스트전용 어댑터 -> 확인
+
+2. -> 제어판 -> 네트워크 및 공유센터 -> 어댑터 설정 변경 
+   -> VirtualBox Host-Only Network 우클릭 -> 속성 
+	->인터넷프로토콜 버전4 선택 -> 속성 
+	-> ip 주소 확인 ex) 192.168.56.1 
+		-> 이 아이디가 가상머신의 게이트웨이로 설정 됨 
+
+3. -> VirtualBox -> 파일 -> 호스트 네트워크 관리자 
+   -> ip 주소가 위에서 확인한 것과 같은지 확인 -> DHCP 서버 사용함 체크해제  
+
+4. -> ubuntu 시작  
+   -> sudo apt-get install net-tools
+	-> net-tools : 인터넷의 연결정보를 알아내는데 필요한 ifconfig,
+		      포트와 통신하고 있는 프로그램을 알아내는데 필요한 netstat과 같이 
+		      ip 관리에 필요한 명령어들을 모아둔 패키지이다. 
+   -> ifconfig -a 
+	-> 추가된 네트워크 인터페이스를 확인 ex) enp0s3
+ 
+5. -> sudo vi /etc/netplan/*.yaml
+	-> 고정 ip에 대한 정보를 기입하는 곳이다.
+	network:
+	 version: 2
+	 renderer: NetworkManager
+	 ethernets:
+	  enp0s3:
+	  addresses: []
+	  dhcp4: true
+	  enp0s8:
+	  addresses: [192.168.56.102/24]
+	  gateway4: 192.168.56.1
+	  nameservers:
+	   addresses: [8.8.8.8,8.8.4.4]
+	  dhcp4: no
+		-> 다음과같이 입력하고 저장
+   -> sudo netplan apply
+	-> 설정내용 반영
+   -> ifconfig -a 
+	-> 변동내용 확인 
+   -> sudo /etc/init.d/httpd restart 
+
+6. 가상머신 외부에서 브라우저 주소창에 192.168.56.102:80 입력 
+	-> index.html 뜨면 성공 	 
+	
+
