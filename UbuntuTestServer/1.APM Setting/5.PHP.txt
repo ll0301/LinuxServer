@@ -33,3 +33,4 @@ https://www.php.net/distributions/php-7.2.10.tar.gz
    -> /etc/init.d/httpd restart 
    
 4. firefox --> 주소창에 127.0.0.1/phpinfo.php 입력  -->  phpinfo 창이 뜨면 성공 
+	

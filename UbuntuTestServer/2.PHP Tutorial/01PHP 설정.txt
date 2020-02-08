@@ -1,0 +1,79 @@
+1. php.ini-development 
+-> /home/apm_server/php-7.2.10
+	-> 이 디렉토리에 php.ini-production 과 php.ini-development 가 있다. 
+	-> 처음 설치시에는 
+	-> cp php.ini-production /app/apache/conf/php.ini
+		-> php.ini-production 을 복사해서 
+		-> /app/apache/conf/php.ini
+			-> 위 경로에 php.ini 생성하였다. 
+
+* php.ini-production / php.ini-development?
+	-> php.ini-production : 실사용(배포용) 버전 	
+	-> php.ini-development : 개발용 버전 
+		-> 보통 개발 단계나 학습 단계에서는 ini-development 를 사용한다. 
+
+->sudo cp php.ini-development /app/apache/conf/php.ini
+	-> php.ini-dvelopment로 변경해보자. 
+
+->sudo /etc/init.d/httpd restart  
+
+
+2. php.ini 설정
+
+*display_errors
+-> sudo vi /app/apache/conf/php.ini 
+	-> display_errors = on 되어있는지 확인  
+		-> 에러가 있을 때 페이지에서 에러를 확인할 수 있도록 해준다. 
+-> sudo vi /app/apache/htdocs/phpinfo.php
+	-> <?php phpinfo( ?> 
+		-> 위와같이 문법에 맞지않도록 하여 에러가 출력되는지 확인해보자. 
+	*Error
+	->Parse error: syntax error, unexpected ')' in /app/apache/htdocs/phpinfo.php on line 1
+	
+
+*log_errors
+log 라는 것은 시스템에서 일어나는 어떠한 일들을 파일에 기록하는 것을 뜻한다. 
+즉, 에러가 나는 일들을 파일에 기록해 두는 것이다. 
+-> sudo vi /app/apache/conf/php.ini 
+	-> log_errors = on 되어있는지 확인 
+	-> cd /app/apache/logs --> apache 에러 로그 경로
+		-> vi error_log
+		-> 날짜등과 함께 위에서 발생한 에러가 기록되는 것을 확인할 수 있다. 
+*실시간으로 log 되는 내용들을 보고싶다면? 
+-> sudo tail -f error_log
+	-> tail : error_log 에 파일을 거꾸로 보여준다.
+	-> -f : 변경된 사항을 실시간으로 보여준다. 
+	-> 위에서 발생한 에러가 기록되는 것을 실시간으로 확인할 수 있다. 
+
+-> sudo tail -f access_log 
+	-> 프로그램에 접속할 때 기록하는 log 이다. 
+
+
+3. 퍼미션 / 권한 
+-> cd /app/apache/htdocs
+-> ls -al 
+d rwx r-x r-x 2 root root 4096 2월 8 23:45 .   ->  출력된다. 
+d : d 가붙어있으면 디렉토리 없으면 파일이라는 뜻이다. 
+rwx : 소유자의 권한을 뜻한다 
+r-x : 그룹의 권한
+r-x : other의 권한 (소유자아니고 그룹도아닌 프로그램에 액세스한 모든 사람)
+	*r = read / w = writhe / x = excute 
+root : 디렉토리 소유자
+root : 디렉토리 그룹 
+마지막 . : /app/apache/htocs -> 현재 디렉토리를 말한다. 
+
+* 간단하게 권한을 바꿔보자 
+-> sudo chown ubuntutest . 
+-> ls 
+-> d rwx r-x r-x 2 ubuntutest root
+	-> 소유자가 ubuntutest 로 변경되었다. 
+	-> 이제 이 디렉토리에서 파일을 추가 하고 업데이트 할때 sudo 를 사용하지 않아도 된다.
+	-> vi test.php   
+		-> <?php ?> 
+			-> sudo 를 사용하지않고 파일을 생성하고 수정해서 저장하였다. 
+	-> 이전에 존재하던 phpinfo.php , index.html 파일은
+	    소유자가 root 이기 때문에 sudo 명령어를 사용해야지만
+	    수정이 가능하다. 
+
+
+ 
