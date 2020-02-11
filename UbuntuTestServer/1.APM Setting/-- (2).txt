@@ -1,0 +1,117 @@
+Version
+MySQL 8.0.12
+
+Download LINK
+https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.12.tar.gz
+
+
+실행순서
+
+1. ->cat /etc/*-release | uniq -> 리눅스종류확인 
+********************************************************************************************************
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=18.04
+DISTRIB_CODENAME=bionic
+DISTRIB_DESCRIPTION="Ubuntu 18.04.1 LTS"
+NAME="Ubuntu"
+VERSION="18.04.1 LTS (Bionic Beaver)"
+ID=ubuntu
+ID_LIKE=debian
+PRETTY_NAME="Ubuntu 18.04.1 LTS"
+VERSION_ID="18.04"
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+VERSION_CODENAME=bionic
+UBUNTU_CODENAME=bionic
+********************************************************************************************************
+
+2. ->getconf LONG_BIT -> 비트확인 
+64
+
+3. -> sudo apt-get update
+   -> sudo apt-get install gcc g++ libncurses5-dev libxml2-dev openssl libssl-dev curl libcurl4-openssl-dev libjpeg-dev libpng-dev libfreetype6-dev libsasl2-dev autoconf libncurses5-dev
+	-> 관련패키지 설치 
+   -> udo apt-get install cmake -> cmake 설치 
+
+4. -> sudo groupadd mysql
+   -> sudo useradd -g mysql -s /bin/bash -m mysql
+	-> mysql 계정 만들기 
+
+5. -> sudo wget https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.12.tar.gz
+	->  mysql 소스 다운로드 
+
+6. -> sudo tar xvf mysql-8.0.12.tar.gz 
+	-> 소스 압축풀기 
+
+7. -> cd mysql-8.0.12/
+   -> sudo cmake \
+-DCMAKE_INSTALL_PREFIX=/usr/local/mysql \
+-DMYSQL_DATADIR=/usr/local/mysql/data \
+-DMYSQL_UNIX_ADDR=/usr/local/mysql/mysql.sock \
+-DSYSCONFDIR=/usr/local/mysql \
+-DMYSQL_TCP_PORT=3306 \
+-DMYSQL_USER=mysql \
+-DDEFAULT_CHARSET=utf8 \
+-DDEFAULT_COLLATION=utf8_general_ci \
+-DWITH_EXTRA_CHARSETS=all \
+-DENABLED_LOCAL_INFILE=1 \
+-DWITH_INNOBASE_STORAGE_ENGINE=1 \
+-DWITH_ARCHIVE_STORAGE_ENGINE=1 \
+-DWITH_BLACKHOLE_STORAGE_ENGINE=1 \
+-DDOWNLOAD_BOOST=1 -DWITH_BOOST=/usr/local/mysql/boost
+   -> sudo make
+   -> sudo make install
+
+8. -> sudo chown -R mysql:mysql /usr/local/mysql
+	-> m=ysql 설치 디렉토리 mysql 계정으로 권한설정
+
+9. -> vi /usr/local/mysql/my.cnf  -> 환경설정 
+*******************************************************************************************************
+[mysqld] 
+bind-address=0.0.0.0 
+port=3306 
+basedir=/usr/local/mysql 
+datadir=/usr/local/mysql/data 
+# pid-file=/usr/local/mysql/mysqld.pid 
+# log_error=/usr/local/mysql/mysql_error.log 
+# lc-messages-dir=/usr/local/mysql/share 
+
+init_connect=SET collation_connection = utf8_general_ci 
+init_connect=SET NAMES utf8 
+character-set-server=utf8 
+collation-server=utf8_general_ci 
+# table_cache=1024 
+max_connections=2048 
+max_user_connections=500 
+max_connect_errors=10000 
+wait_timeout=300 
+# query_cache_type = 1 
+# query_cache_size = 128M 
+# query_cache_limit = 5M 
+slow_query_log 
+long_query_time=3 
+max_allowed_packet=16M 
+sort_buffer_size = 2M 
+# skip-innodb skip-name-resolve 
+# sql_mode = STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION 
+
+[mysql] 
+default-character-set=utf8 
+
+[client] 
+default-character-set=utf8
+*******************************************************************************************************
+
+10. -> cd /usr/local/mysql
+    -> sudo bin/mysqld --defaults-file=/usr/local/mysql/my.cnf --initialize --console --user=mysql --datadir=/usr/local/mysql/data --basedir=/usr/local/mysql
+	-> mysql데이터 페이스 초기화 (mysql 계정으로 실행)
+
+11. -> sudo bin/mysqld stop 
+	-> mysql 종료 (프로세스가 존재하는 경우) 
+
+12. -> bin/mysqld_safe --skip-grant-tables &
+	-> root 암호 초기화 
+
+13. -> 

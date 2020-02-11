@@ -1,0 +1,44 @@
+// mysql monitor
+-> mysql 서버의 번들로 제공하는 기본 프로그램
+-> 명령어 기반
+
+
+
+[사용법]
+
+// 접속
+-> /usr/local/mariadb103/bin/mysql -u아이디 -p비밀번호
+-> /usr/local/mariadb103/bin/mysql -h호스트주소 -p포트번호 -u아이디 -p비밀번호
+
+//데이터베이스 선택
+-> use mysql;
+
+//데이터베이스 생성
+-> CREATE DATABASE music CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+//생성확인
+-> show databases;
+
+//데이터베이스 변경
+-> use music;
+
+//테이블 생성
+CREATE TABLE favorite_music (
+  title varchar(255) NOT NULL,
+  musician varchar(20) NOT NULL,
+  duration varchar(20) NOT NULL,
+  album varchar(30) NOT NULL
+) ENGINE=innodb;
+-> innodb는 Mysql 을 위한 데이터베이스 엔진이다.
+    -> 트랜젝션지원
+    -> 빈번한 쓰기, 수정, 삭제시 처리능력
+    -> 디스크, 전원 등의 장애 발생시 복구성능
+    -> 동시처리가 많은 환경에 적합
+    -> ROW 단위 락킹 ...
+
+//테이블에 데이터 추가
+insert into favorite_music (title,musician,duration,album)
+values('Chasing Pavements', '아델', '3:30', 19);
+
+//데이터 조회
+select * from favorite_music;

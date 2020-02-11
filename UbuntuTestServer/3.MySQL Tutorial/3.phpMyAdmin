@@ -1,0 +1,35 @@
+//웹기반으로 mysql을 제어할 수 있는 mysql-client
+
+//설치
+sudo apt-get install phpmyadmin
+
+// 패키지설정창 -> 자동으로 재설정할 웹 서버 :
+  -> apache2 -> space 바 -> 엔터
+
+// phpadmin 설정 중입니다.
+ -> phpmyadmin 의 데이터베이스를 dbconfig-common 으로 설정하시겠습니까?
+-> yes
+-> phpmyadmin에서 사용할 mysql 응용 프로그램 암호 : 설정
+-> 데이터베이스 관리자 계정의 암호 : 설정
+
+
+// sudo systemctl start mysql -> 실행
+// sudo systemctl enable mysql -> 자동 재시작
+// sudo /usr/bin/mysql -u root -p -> sql 접속
+
+// ALTER USER 'root'@'localhost' IDENTIFIED BY '******';
+  -> USER root 는 localhost 에서만 접속 가능하며 비밀번호 설정한다.
+
+// SELECT User, Host, authentication_string FROM mysql.user;
+  -> user 정보 확인
+
+* phpmyadmin 에서 접속할 유저 만들고 권한 주기
+// CREATE USER 'test'@'%' IDENTIFIED BY '*****';
+  -> test 라는 유저를 생성하고 비밀번호를 만든다.
+  -> '%' 은 어디서든 접속 가능한 유저임을 나타낸다.
+// GRANT ALL PRIVILEGES ON * . * TO 'root'@'%' WITH GRANT OPTION;
+// FLUSH PRIVILEGES;
+
+// 이제 서버 외부 브라우저에서 ip주소/phpmyadmin 을 입력한다.
+-> 로그인 화면이나옴
+-> test 와 비밀번호를 입력하면 로그인
