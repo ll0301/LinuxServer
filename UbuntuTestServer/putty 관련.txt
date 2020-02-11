@@ -1,0 +1,19 @@
+putty 
+
+
+// 설정
+
+0. 우분투
+   -> sudo apt-get install ssh 
+
+1. 실행 -> Host Name(or IP address) 입력 -> Port 22 
+   -> Saved Sessions 입력 
+
+2. Appearance -> Cursor blinks 체크 
+   Change -> Consalas 폰트 -굵게 
+
+3. Behaviour -> Full screen on Alt-Enter
+
+4. Translation -> UTF-8
+
+5. Session -> 생성한 세션선택 -> save
