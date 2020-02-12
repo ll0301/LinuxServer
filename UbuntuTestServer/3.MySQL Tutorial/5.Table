@@ -1,0 +1,239 @@
+// Table
+-> 실질적으로 데이터가 저장되는 저장소
+-> 파일과 유사한 역할을 하는것이 table 이다.
+
+// 스키마?
+-> 테이블에 적재될 데이터의 구조와 형식을 정의하는 것
+-> 일종의 데이터의 설계도를 만드는 것
+
+// 1. 테이블 생성
+CREATE TABLE table_name (
+    칼럼명1 data_type,
+    칼럼명2 data_type
+)
+// student 테이블 생성
+CREATE TABLE student (
+    id  tinyint NOT NULL ,
+    name  char(4) NOT NULL ,
+    sex  enum('남자','여자') NOT NULL ,
+    address  varchar(50) NOT NULL ,
+    birthday  datetime NOT NULL ,
+    PRIMARY KEY (`id`)
+);
+// 생성확인
+show tables;
+// 테이블 스키마 확인
+desc 테이블명;
+// 테이블 제거
+drop table 테이블명;
+
+// 2. 데이터타입
+char() -> 0 to 255 고정 문자 길이 -> 1이 오든 5가오든 디스크상의 크기가 같다.
+      -> 고정문자의 특성으로 인해 검색성능을 높일 수 있다.
+varchar() -> 0~255 가변 문자 길이 -> 5글자와 50글자의 디스크상 크기가 달라진다.
+      -> 데이터 용량을 절약하는데 용이하다.
+text -> 65535 문자길이 -> 본문에 사용
+int ->
+tinyint -> -128 ~ 127 숫자 사용 / 0~255정수형 unsigned
+float -> 작은 부동소수점
+duble -> 큰 부동소수점
+date - > 년 월 일
+datetime -> 년 월 일 시 분 초
+enum -> 정해져있는 데이터를 입력하도록 강제할 때
+
+
+// phpmyadmin
+
+
+// 2. 테이블 삽입
+INSERT INTO table_name VALUES (value1, value2, value3,...)
+INSERT INTO student VALUES ('2', 'leezche', '여자', '서울', '2000-10-26');
+INSERT INTO table_name (column1, column2, column3,...) VALUES (value1, value2, value3,...)
+INSERT INTO student (id, name, sex, address, birthday) VALUES ('1', 'egoing', '남자', 'seoul', '2000-11-16');
+// 테이블 삽입 확인
+SELECT * FROM 테이블명 ;
+
+// phpmyadmin
+
+// 2. 테이블 변경
+UPDATE 테이블명 SET 컬럼1=컬럼1의 값, 컬럼2=컬럼2의 값 WHERE 대상이 될 컬럼명=컬럼의 값
+UPDATE student SET name= 'KimG' WHERE id=1;
+UPDATE student SET name= 'LeeC' WHERE id=2;
+UPDATE student SET birthday='2001-4-1' WHERE id=3;
+
+// 3.삭제
+// 특정 행 삭제
+DELETE FROM student WHERE id = 2;
+// 전체데이터 삭제
+TRUNCATE 테이블명
+TRUNCATE student;
+// 테이블 삭제
+DROP TABLE 테이블명;
+
+// 4. 조회
+SELECT 칼럼명1, 칼럼명2
+    [FROM 테이블명 ]
+    [GROUP BY 칼럼명]
+    [ORDER BY 칼럼명 [ASC | DESC]]
+    [LIMIT offset, 조회 할 행의 수]
+    SELECT * FROM student;
+    SELECT name, birthday FROM student;
+    SELECT * FROM student WHERE id=3;
+    SELECT * FROM student WHERE sex='남' AND address='평창';
+    SELECT * FROM student WHERE sex='여' OR address='서울';
+    SELECT * FROM student LIMIT 1; // 조회한 것을 몇개 가져올 것이
+    SELECT * FROM student LIMIT 1,1;
+    // 첫번째 offset -> 조회된 결과
+    // offset 다음으로 몇개를 출력할 것인지
+    SELECT * FROM student LIMIT 2,1; -> 2번째 다음으로 1개를 출력한다.
+    SELECT * FROM student LIMIT 3,1; -> 3번째 다음으로 1개를 출력한다.
+    SELECT * FROM student WHERE sex='남' LIMIT 2; -> sex 가 남 인것을 2개 출력한다.
+
+// 5. 그룹핑
+SELECT * FROM 테이블명 GROUP BY 그룹핑 할 기준 칼럼명
+SELECT sex FROM student GROUP BY sex;
+-> 남, 여 만 출력함
+-> 결국 남자와 여자라는 데이터로 구성되있음을 알 수 있다.
+SELECT sex,sum(id), avg(id) FROM student GROUP BY sex;
+-> sum() =   남학생 혹은 여학생들의 id 값의 총 합계
+-> avg() = 평균값
+
+// 여러개의 데이터중 데이터가 어떻게 구성되어 있는가
+// 각각의 그룹핑 된 콜럼을 기준으로 해서
+  특정한 다른콜럼의 평균이나 합계를 낼수 있도록 도와준다.
+
+
+// 6. 정렬
+// 지정된 컬럼으로 행을 정렬한다.
+SELECT * FROM 테이블명 ORDER BY 정렬의 기준으로 사용할 열 [DESC | ASC]
+-> SELECT * FROM student ORDER BY name DESC, address ASC;
+-> name = ㄱ 역순 , address = ㄱ 순서
+-> SELECT * FROM student ORDER BY birthday DESC;
+-> 나이가 어린 순서대로 정렬됨 -> 즉 년도가 큰 순서부터 역순
+-> SELECT * FROM student ORDER BY birthday ASC;
+-> 나이가 많은 순서대로 정렬됨 -> 즉 년도가 작은 순서부터 순서대로
+
+// 7. index
+-> index => 색인
+-> 조회할 때 원하는 행을 빠르게 찾을 수 있게 준비해둔 데이터
+
+// 종류
+-> primary : 중복되지 않는 유일한 키
+-> normal : 중복을 허용함
+-> unique : 중복을 허용하지 않는 유일한키
+-> foreign : 다른 테이블과의 관계성을 부여하는 키
+-> full text: 자연어 검색, myisam 에서만 지원
+
+CREATE TABLE student2 (
+  id tinyint(4) NOT NULL AUTO_INCREMENT,
+  name char(4) NOT NULL,
+  address varchar(50) NOT NULL,
+  department enum('국문과','영문과','컴퓨터공학과','전자공학과','물리학과') NOT NULL,
+  introduction text NOT NULL,
+  number char(255) NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY idx_number (number) USING BTREE,
+  KEY idx_department (department),
+  KEY idx_department_name (department,address),
+  FULLTEXT KEY idx_introduction (introduction)
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+
+PRIMARY KEY
+-> 테이블 전체를 통츨어서 중복되지 않는 값을 지정해야 한다.
+-> WHERE 문을 이용해서 데이터를 조회할때 가장 고속으로 데이터를 가져올 수 있다.
+-> 테이블마다 딱 하나의 primary key 를 가질 수 있다.
+SELECT * FROM student2 WHERE id=3;
+-> id 를 primary key 로 지정함
+
+UNIQUE KEY
+-> 테이블 전체를 통틀어서 중복되지 않는 값을 지정해야한다. (== primary)
+-> 고속으로 데이터를 가져올 수 있따.
+-> 여러개의 UNIGUE KEY 를 지정할 수 있다.
+SELECT * FROM student2 WHERE number=0~~;
+
+NORMAR KEY
+-> 중복허용
+-> PRIMARY UNIQUE 보다 속도가 느리다.
+-> 여러개의 키를 지정할 수 있따.
+SELECT * FROM student2 WHERE department='국문과';
+
+FULL text
+-> MYSQL 기본설정이 4로 되어있기 때문에 최소 4글자 이상을 입력하거나 값을 조절해야한다.
+-> MYSQL 은 전문 검색엔진이 아니기 때문에 한글 검색이 잘 안된다.
+-> 스토리지 엔진 중 MYISAM 에서만 사용가능
+SELECT introduction, MATCH (introduction) AGAINST('영문과에') FROM student2
+WHERE MATCH (introduction) AGAINST('영문과에');
+
+중복키
+-> 하나의 키에 여러개의 칼럼 포함
+SELECT * FROM student2 WHERE department='국문과' AND address='제주';
+
+// 인덱스의 정의방법
+-> 자주 조회되는 칼럼에 적용
+-> 조회 시 오랜시간을 소모하는 컬럼에 적용
+-> 데이터가 긴 경우 인덱스를 사용하지 않는다.
+
+
+//8. join
+//여러개의 테이블 사용하기
+ 데이터의 규모가 커지면서 하나의 테이블로 정보를 수용하기가 어려워지면
+ 테이블을 분활하고 테이블 간의 관계성을 부여한다.
+
+
+ CREATE TABLE student3 (
+  id tinyint(4) NOT NULL,
+  name char(4) NOT NULL,
+  sex enum('남자','여자') NOT NULL,
+  location_id tinyint(4) NOT NULL,
+  birthday datetime NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE location (
+id  tinyint UNSIGNED NOT NULL AUTO_INCREMENT ,
+name  varchar(20) NOT NULL ,
+distance  tinyint UNSIGNED NOT NULL ,
+PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;;
+
+// 위 student3 에 address 와 ditance 가 있다고 친다면
+// address 는 distance 와 관련되어 있기 때문에
+// location 이라는 별도의 테이블로 분할 할 수 있다.
+
+// join 은 테이블간의 관계성에 따라서 복수의 테이블을 결합,
+ 하나의 테이블인 것 처럼  결과를 출력한다.
+
+// join의 종류
+-> OUTTER JOIN : 매칭되는 행이 없어도 결과를 가져오고 매칭되는 행이 없는경우 NULL
+                LEFT JOIN 과 RIGHT JOIN이 있음
+-> INNER JOIN : 조인하는 두개의 테이블에 모두 데이터가 존재하는 행에 대해서만 결과 출력
+
+// LEFT JOIN
+-> 가장 많이 사용되는 조인의 형태이다
+SELECT s.name, s.location_id, l.name AS address, l.distance
+FROM student3 AS s LEFT JOIN location AS l ON s.locaion_id =l.id;
+// 해석해보자
+s.name, s.location_id -> student3 AS s
+-> 즉, s.name 은 student3 의 name 이고 s.location_id 또한 student3 의 location.id 이다.
+l.name , l.distance -> location AS l
+-> 즉, l.name = location 의 name / l.distance = location 의 distance
+l.name AS address
+-> l.name 은 address 이다.
+-> 즉, location 의 name 은 서울,대전,제주 등 주소가 저장되어 있기 때문에 address 로 표시한다.
+FROM student3 AS s LEFT JOIN location AS l
+-> student3(s) 부터 왼쪽으로 location(l) 을 출력한다.
+ON s.location_id = l.id
+-> student3 의 location_id 는 location id 와 같다.
+-> 즉, s.location_id 값과 l.id 값은 것을 함께 출력한다.
+
+// OUTTER JOIN 과 INNER JOIN 의 차이
+DELETE FROM location WHERE name='제주';
+-> location 테이블에서 name 값이 '제주' 인 데이터를 삭제한다.
+// OUTTER
+SELECT s.name, s.location_id, l.name AS address, l.distance
+FROM student AS s LEFT JOIN location AS l ON s.location_id = l.id;
+-> 관계된 모든 행을 출력한다. '제주' 는 없기때문에 NULL 이 출력된다.
+
+SELECT s.name, s.location_id, l.name AS address, l.distance
+FROM student AS s INNER JOIN location AS l ON s.location_id = l.id;
+-> 관계된 모든 행 중에서 '제주'가 없는 행은 출력하지 않는다.

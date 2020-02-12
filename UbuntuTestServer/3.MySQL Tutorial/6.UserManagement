@@ -1,0 +1,50 @@
+// 1. 권한
+// 사용자에 따라서 접근할 수 있는 데이터와 기능을 제한
+
+// 2. GRANT
+-> 사용자를 생성하고 권한을 부여함
+GRANT 권한 ON 데이터베이스.테이블 TO '아이디'@'호스트' IDENTIFIED BY '비밀번호'
+
+//사용자의 제한
+-> 데이터베이스 서버에 접속하는 사용자를 제한한다.
+-> 아이디@호스트의 호스트는 접속자가 사용하는 머신의 IP이다.
+-> IP 를 특정하지 않으려면 %를 사용한다.
+USER1@123.123.123.123 -> IP 123.123.123.123 에서 접속한 id USER1
+USER2@% -> IP 에 관계없이 ID 가 USER2 인 사용자
+
+//대상의 제한
+-> 사용자가 제어할 대싱이 되는 데이터베이스, 테이블을 지정
+-> *를 사용하면 모든 데이터베이스, 테이블을 제어 대상으로 함
+
+//권한(기능)의제한
+-> 사용할 수 있는 권한을 제한
+개발자 : DELETE,INSERT,SELECT,UPDATE
+설계자 : ALTER, CREATE, DELETE, DROP, INDEX, INSERT, SELECT, UPDATE
+DBA : ALL
+
+GRANT DELETE,INSERT,SELECT,UPDATE ON class.* TO 'dev'@'%' IDENTIFIED BY '1234';
+-> id 가 dev 비밀번호 1234 인 사용자가
+  -> 어떠한 ip에서 접속하든지
+    -> class 데이터베이스만 접근할 수 있고
+      -> class 에 대해서 DELETE,INSERT,SELECT,UPDATE 의 권한이 주어진다.
+
+GRANT ALTER, CREATE, DELETE, DROP, INDEX, INSERT, SELECT, UPDATE
+ON *.* TO `archi`@`100.100.100.100` IDENTIFIED BY '1234';
+-> id arich 비밀번호 1234 인 사용자가
+  -> 100.100.100.100 ip 에서 접속한다면 
+    -> 모든 데이터베이스에 접근 할 수 있으며
+      -> 모든 권한(기능) 이 주어진다.
+
+
+// 3. SHOW GRANTS
+-> 자신의 권한이나, 특정 사용자의 권한을 열람
+SHOW GRANT FOR dev; -> 사용자 dev 의 권한을 열람
+
+// 4. REVOKE
+-> 사용자의 권한을 제거
+REVOKE DELETE ON class.* from dev;
+        -> 사용자 dev는 class 데이터베이스에서 DELETE 권한을 제거한다.
+
+// 5. DROP USER
+-> 사용자 삭제
+DROP USER 'dev'@'%';

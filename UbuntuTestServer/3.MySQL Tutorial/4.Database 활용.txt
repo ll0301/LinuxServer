@@ -1,0 +1,17 @@
+// Database
+-> 데이터가 실질적으로 적재되는 테이블들을 분류하는 상위 개념
+
+
+//생성
+CREATE DATABASE 데이터베이스명 CHARACTER SET utf8 COLLATE utf8_general_ci;
+//삭제
+DROP DATABASE 데이터베이스명;
+//열람
+SHOW DATABASES;
+//선택
+USE 데이터베이스명
+
+// phpmyadmin 생성
+// Databases -> Create new database -> collation = utf8_general_ci 선택
+// phpmyadmin 삭제
+// Databases -> 삭제할 데이터베이스 선택 -> 삭제 (drop)
